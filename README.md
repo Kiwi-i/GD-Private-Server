@@ -1,26 +1,26 @@
-# GMDprivateServer
+# GD-Private-Server
 ## Geometry Dash Private Server
 Basically a Geometry Dash Server Emulator
 
-Supported version of Geometry Dash: 1.0 - 2.2
+**The primary difference from Cvolton's server is this tries to mimic RobTop's server as much as possible.**
 
-(See [the backwards compatibility section of this article](https://github.com/Cvolton/GMDprivateServer/wiki/Deliberate-differences-from-real-GD) for more information)
+Supported version of Geometry Dash: **1.0 - 2.2**
+(See [the backwards compatibility section of this article](https://github.com/Kiwi-i/GD-Private-Server/wiki/Deliberate-differences-from-real-GD) for more information)
 
-Required version of PHP: 5.5+ (tested up to 8.1.2)
+Required version of PHP: **5.5+** (tested up to 8.1.2)
 
 ### Branches
-- master - This is the main version of the server.
-- untested - This branch contains the newest breaking changes. Note that this branch has virtually no support and therefore you're on your own if stuff breaks.
-
+- master - Primary branch supporting 2.2
+***
 ### Setup
-1) Upload the files on a webserver
-2) Import database.sql into a MySQL/MariaDB database
-3) Edit the links in GeometryDash.exe (some are base64 encoded since 2.1, remember that)
+Follow [the setup guide](https://github.com/Kiwi-i/GD-Private-Server/wiki/Setup-guide-for-VPSs-and-Webserver-Hosts)
 
 #### Updating the server
 See [README.md in the `_updates`](_updates/README.md)
-
+***
 ### Credits
+Cvolton for 99.9% of the server code
+
 Base for account settings and the private messaging system by someguy28
 
 Using this for XOR encryption - https://github.com/sathoro/php-xor-cipher - (incl/lib/XORCipher.php)
