@@ -39,7 +39,6 @@ if(!empty($_POST["diff"])){
 	$diff = "-";
 }
 
-
 //ADDITIONAL PARAMETERS
 if($gameVersion==0){
 	$params[] = "levels.gameVersion <= 18";
@@ -249,7 +248,7 @@ $querybase = "FROM levels LEFT JOIN songs ON levels.songID = songs.ID LEFT JOIN 
 if(!empty($params)){
 	$querybase .= " WHERE (" . implode(" ) AND ( ", $params) . ")";
 }
-$query = "SELECT levels.*, songs.ID, songs.name, songs.authorID, songs.authorName, songs.size, songs.isDisabled, songs.download, users.userName, users.extID$sug $querybase";
+$query = "SELECT levels.*, songs.ID, songs.name, songs.authorID, songs.authorName, songs.size, songs.disabled, songs.download, users.userName, users.extID$sug $querybase";
 if($order){
 	if($ordergauntlet){
 		$query .= "ORDER BY $order ASC";
@@ -279,7 +278,12 @@ foreach($result as &$level1) {
 		if(!empty($gauntlet)){
 			$lvlstring .= "44:$gauntlet:";
 		}
-		$lvlstring .= "1:".$level1["levelID"].":2:".$level1["levelName"].":5:".$level1["levelVersion"].":6:".$level1["userID"].":8:10:9:".$level1["starDifficulty"].":10:".$level1["downloads"].":12:".$level1["audioTrack"].":13:".$level1["gameVersion"].":14:".$level1["likes"].":17:".$level1["starDemon"].":43:".$level1["starDemonDiff"].":25:".$level1["starAuto"].":18:".$level1["starStars"].":19:".$level1["starFeatured"].":42:".$level1["starEpic"].":45:".$level1["objects"].":3:".$level1["levelDesc"].":15:".$level1["levelLength"].":30:".$level1["original"].":31:".$level1['twoPlayer'].":37:".$level1["coins"].":38:".$level1["starCoins"].":39:".$level1["requestedStars"].":46:1:47:2:40:".$level1["isLDM"].":35:".$level1["songID"]."|";
+		$calculatedDifficulty = $level1["starDifficulty"];
+		if ($level1["starStars"] == 0 || $level1["starStars"] == '0') {
+			$calculatedDifficulty = floor(intval($level1["ratingVotes"]) / intval($level1["totalVotes"])) / 2;
+			$calculatedDifficulty *= 10;
+		}
+		$lvlstring .= "1:".$level1["levelID"].":2:".$level1["levelName"].":5:".$level1["levelVersion"].":6:".$level1["userID"].":8:10:9:".$calculatedDifficulty.":10:".$level1["downloads"].":12:".$level1["audioTrack"].":13:".$level1["gameVersion"].":14:".$level1["likes"].":17:".$level1["starDemon"].":43:".$level1["starDemonDiff"].":25:".$level1["starAuto"].":18:".$level1["starStars"].":19:".$level1["starFeatured"].":42:".$level1["starEpic"].":45:".$level1["objects"].":3:".$level1["levelDesc"].":15:".$level1["levelLength"].":30:".$level1["original"].":31:".$level1['twoPlayer'].":37:".$level1["coins"].":38:".$level1["starCoins"].":39:".$level1["requestedStars"].":46:1:47:2:40:".$level1["LDM"].":35:".$level1["songID"]."|";
 		if($level1["songID"]!=0){
 			$song = $gs->getSongString($level1);
 			if($song){
@@ -292,11 +296,12 @@ foreach($result as &$level1) {
 $lvlstring = substr($lvlstring, 0, -1);
 $userstring = substr($userstring, 0, -1);
 $songsstring = substr($songsstring, 0, -3);
-echo $lvlstring."#".$userstring;
+$finalstring = $lvlstring."#".$userstring;
 if($gameVersion > 18){
-	echo "#".$songsstring;
+	$finalstring .= "#".$songsstring;
 }
-echo "#".$totallvlcount.":".$offset.":10";
-echo "#";
-echo GenerateHash::genMulti($lvlsmultistring);
+$finalstring .= "#".$totallvlcount.":".$offset.":10";
+$finalstring .= "#";
+$finalstring .= GenerateHash::genMulti($lvlsmultistring);
+echo $finalstring;
 ?>

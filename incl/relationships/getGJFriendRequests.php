@@ -15,7 +15,7 @@ $accountID = GJPCheck::getAccountIDOrDie();
 $page = ExploitPatch::number($_POST["page"]);
 $offset = $page*10;
 if($getSent == 0){
-	$query = "SELECT accountID, toAccountID, uploadDate, ID, comment, isNew FROM friendreqs WHERE toAccountID = :accountID LIMIT 10 OFFSET $offset";
+	$query = "SELECT accountID, toAccountID, uploadDate, ID, comment, new FROM friendreqs WHERE toAccountID = :accountID LIMIT 10 OFFSET $offset";
 	$countquery = "SELECT count(*) FROM friendreqs WHERE toAccountID = :accountID";
 }elseif($getSent == 1){
 	$query = "SELECT * FROM friendreqs WHERE accountID = :accountID LIMIT 10 OFFSET $offset";
@@ -49,7 +49,7 @@ foreach($result as &$request) {
 	}else{
 		$extid = 0;
 	}
-	$reqstring .= "1:".$user["userName"].":2:".$user["userID"].":9:".$user["icon"].":10:".$user["color1"].":11:".$user["color2"].":14:".$user["iconType"].":15:".$user["special"].":16:".$extid.":32:".$request["ID"].":35:".$request["comment"].":41:".$request["isNew"].":37:".$uploadTime."|";
+	$reqstring .= "1:".$user["userName"].":2:".$user["userID"].":9:".$user["icon"].":10:".$user["color1"].":11:".$user["color2"].":14:".$user["iconType"].":15:".$user["special"].":16:".$extid.":32:".$request["ID"].":35:".$request["comment"].":41:".$request["new"].":37:".$uploadTime."|";
 
 }
 $reqstring = substr($reqstring, 0, -1);

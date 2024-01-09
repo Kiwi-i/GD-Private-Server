@@ -39,7 +39,7 @@ foreach ($result as &$message1) {
 		$query=$db->prepare("SELECT * FROM users WHERE extID = :accountID");
 		$query->execute([':accountID' => $accountID]);
 		$result12 = $query->fetchAll()[0];
-		$msgstring .= "6:".$result12["userName"].":3:".$result12["userID"].":2:".$result12["extID"].":1:".$message1["messageID"].":4:".$message1["subject"].":8:".$message1["isNew"].":9:".$getSent.":7:".$uploadDate."|";
+		$msgstring .= "6:".$result12["userName"].":3:".$result12["userID"].":2:".$result12["extID"].":1:".$message1["messageID"].":4:".$message1["subject"].":8:".$message1["new"].":9:".$getSent.":7:".$uploadDate."|";
 	}
 }
 $msgstring = substr($msgstring, 0, -1);

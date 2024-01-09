@@ -30,7 +30,7 @@ if($listID != 0) {
 		exit($listID);
 	}
 }
-$list = $db->prepare('INSERT INTO lists (listName, listDesc, listVersion, accountID, listlevels, starDifficulty, original, unlisted, uploadDate) VALUES (:listName, :listDesc, :listVersion, :accountID, :listlevels, :difficulty, :original, :unlisted, :timestamp)');
+$list = $db->prepare('INSERT INTO lists (listName, listDesc, listVersion, accountID, extID, listlevels, starDifficulty, original, unlisted, uploadDate) VALUES (:listName, :listDesc, :listVersion, :accountID, :accountID, :listlevels, :difficulty, :original, :unlisted, :timestamp)');
 $list->execute([':listName' => $listName, ':listDesc' => $listDesc, ':listVersion' => $listVersion, ':accountID' => $accountID, ':listlevels' => $listLevels, ':difficulty' => $difficulty, ':original' => $original, ':unlisted' => $unlisted, ':timestamp' => time()]);
 echo $db->lastInsertId();
 ?>

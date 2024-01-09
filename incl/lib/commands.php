@@ -55,21 +55,27 @@ class Commands {
 			return true;
 		}
 		if(substr($comment,0,8) == '!feature' AND $gs->checkPermission($accountID, "commandFeature")){
-			$query = $db->prepare("UPDATE levels SET starFeatured='1' WHERE levelID=:levelID");
-			$query->execute([':levelID' => $levelID]);
+			$featurelevel = isset($commentarray[1]) ? $commentarray[1] : '1';
+			$starEpic = '0';
+			switch($featurelevel) {
+				case '2':
+					$starEpic = '1';
+					break;
+				case '3':
+					$starEpic = '2';
+					break;
+				case '4':
+					$starEpic = '3';
+					break;
+			}
+			$query = $db->prepare("UPDATE levels SET starFeatured='1', starEpic=:starEpic WHERE levelID=:levelID");
+			$query->execute([':levelID' => $levelID, ':starEpic' => $starEpic]);
 			$query = $db->prepare("INSERT INTO modactions (type, value, value3, timestamp, account) VALUES ('2', :value, :levelID, :timestamp, :id)");
 			$query->execute([':value' => "1", ':timestamp' => $uploadDate, ':id' => $accountID, ':levelID' => $levelID]);
 			return true;
 		}
-		if(substr($comment,0,5) == '!epic' AND $gs->checkPermission($accountID, "commandEpic")){
-			$query = $db->prepare("UPDATE levels SET starEpic='1' WHERE levelID=:levelID");
-			$query->execute([':levelID' => $levelID]);
-			$query = $db->prepare("INSERT INTO modactions (type, value, value3, timestamp, account) VALUES ('4', :value, :levelID, :timestamp, :id)");
-			$query->execute([':value' => "1", ':timestamp' => $uploadDate, ':id' => $accountID, ':levelID' => $levelID]);
-			return true;
-		}
-		if(substr($comment,0,7) == '!unepic' AND $gs->checkPermission($accountID, "commandUnepic")){
-			$query = $db->prepare("UPDATE levels SET starEpic='0' WHERE levelID=:levelID");
+		if(substr($comment,0,10) == '!unfeature' AND $gs->checkPermission($accountID, "commandUnfeature")){
+			$query = $db->prepare("UPDATE levels SET starEpic='0', starFeatured='0' WHERE levelID=:levelID");
 			$query->execute([':levelID' => $levelID]);
 			$query = $db->prepare("INSERT INTO modactions (type, value, value3, timestamp, account) VALUES ('4', :value, :levelID, :timestamp, :id)");
 			$query->execute([':value' => "0", ':timestamp' => $uploadDate, ':id' => $accountID, ':levelID' => $levelID]);
@@ -209,27 +215,27 @@ class Commands {
 			return true;
 		}
 		if(self::ownCommand($comment, "sharecp", $accountID, $targetExtID)){
-			$query = $db->prepare("SELECT userID FROM users WHERE userName = :userName ORDER BY isRegistered DESC LIMIT 1");
+			$query = $db->prepare("SELECT userID FROM users WHERE userName = :userName ORDER BY registered DESC LIMIT 1");
 			$query->execute([':userName' => $commentarray[1]]);
 			$targetAcc = $query->fetchColumn();
 			//var_dump($result);
 			$query = $db->prepare("INSERT INTO cpshares (levelID, userID) VALUES (:levelID, :userID)");
 			$query->execute([':userID' => $targetAcc, ':levelID' => $levelID]);
-			$query = $db->prepare("UPDATE levels SET isCPShared='1' WHERE levelID=:levelID");
+			$query = $db->prepare("UPDATE levels SET sharedCP='1' WHERE levelID=:levelID");
 			$query->execute([':levelID' => $levelID]);
 			$query = $db->prepare("INSERT INTO modactions (type, value, value3, timestamp, account) VALUES ('11', :value, :levelID, :timestamp, :id)");
 			$query->execute([':value' => $commentarray[1], ':timestamp' => $uploadDate, ':id' => $accountID, ':levelID' => $levelID]);
 			return true;
 		}
 		if(self::ownCommand($comment, "ldm", $accountID, $targetExtID)){
-			$query = $db->prepare("UPDATE levels SET isLDM='1' WHERE levelID=:levelID");
+			$query = $db->prepare("UPDATE levels SET LDM='1' WHERE levelID=:levelID");
 			$query->execute([':levelID' => $levelID]);
 			$query = $db->prepare("INSERT INTO modactions (type, value, value3, timestamp, account) VALUES ('14', :value, :levelID, :timestamp, :id)");
 			$query->execute([':value' => "1", ':timestamp' => $uploadDate, ':id' => $accountID, ':levelID' => $levelID]);
 			return true;
 		}
 		if(self::ownCommand($comment, "unldm", $accountID, $targetExtID)){
-			$query = $db->prepare("UPDATE levels SET isLDM='0' WHERE levelID=:levelID");
+			$query = $db->prepare("UPDATE levels SET LDM='0' WHERE levelID=:levelID");
 			$query->execute([':levelID' => $levelID]);
 			$query = $db->prepare("INSERT INTO modactions (type, value, value3, timestamp, account) VALUES ('14', :value, :levelID, :timestamp, :id)");
 			$query->execute([':value' => "0", ':timestamp' => $uploadDate, ':id' => $accountID, ':levelID' => $levelID]);

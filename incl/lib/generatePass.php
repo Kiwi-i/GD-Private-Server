@@ -52,7 +52,7 @@ class GeneratePass
 			if ($query4->fetchColumn() > 0) {
 				$query6 = $db->prepare("UPDATE modips SET IP=:hostname, modipCategory=:modipCategory WHERE accountID=:id");
 			}else{
-				$query6 = $db->prepare("INSERT INTO modips (IP, accountID, isMod, modipCategory) VALUES (:hostname,:id,'1',:modipCategory)");
+				$query6 = $db->prepare("INSERT INTO modips (IP, accountID, moderator, modipCategory) VALUES (:hostname,:id,'1',:modipCategory)");
 			}
 			$query6->execute([':hostname' => $ip, ':id' => $accountID, ':modipCategory' => $modipCategory]);
 		}
@@ -64,7 +64,7 @@ class GeneratePass
 
 		if(self::tooManyAttemptsFromIP()) return -1;
 
-		$userInfo = $db->prepare("SELECT gjp2, isActive FROM accounts WHERE accountID = :accid");
+		$userInfo = $db->prepare("SELECT gjp2, activated FROM accounts WHERE accountID = :accid");
 		$userInfo->execute([':accid' => $accid]);
 		if($userInfo->rowCount() == 0) return 0;
 
@@ -73,7 +73,7 @@ class GeneratePass
 
 		if(password_verify($gjp2, $userInfo['gjp2'])) {
 			self::assignModIPs($accid, $gs->getIP());
-			return $userInfo['isActive'] ? 1 : -2;
+			return $userInfo['activated'] ? 1 : -2;
 		} else {
 			self::logInvalidAttemptFromIP($accid);
 			return 0;
@@ -100,7 +100,7 @@ class GeneratePass
 
 		if(self::tooManyAttemptsFromIP()) return -1;
 
-		$query = $db->prepare("SELECT accountID, salt, password, isActive, gjp2 FROM accounts WHERE accountID = :accid");
+		$query = $db->prepare("SELECT accountID, salt, password, activated, gjp2 FROM accounts WHERE accountID = :accid");
 		$query->execute([':accid' => $accid]);
 		if($query->rowCount() == 0) return 0;
 		
@@ -108,7 +108,7 @@ class GeneratePass
 		if(password_verify($pass, $result["password"])){
 			if(!$result["gjp2"]) self::assignGJP2($accid, $pass);
 			self::assignModIPs($accid, $gs->getIP());
-			return $result['isActive'] ? 1 : -2;
+			return $result['activated'] ? 1 : -2;
 		} else {
 			// Code to validate password hashes created prior to March 2017 has been removed.
 			self::logInvalidAttemptFromIP($accid);

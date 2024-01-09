@@ -14,6 +14,7 @@ if(empty($_POST["gameVersion"])){
 }else{
 	$sign = "> 19";
 }
+
 if(!empty($_POST["accountID"])){
 	$accountID = GJPCheck::getAccountIDOrDie();
 }else{
@@ -24,67 +25,71 @@ if(!empty($_POST["accountID"])){
 }
 
 $type = ExploitPatch::remove($_POST["type"]);
-if($type == "top" OR $type == "creators" OR $type == "relative"){
-	if($type == "top"){
-		$query = $db->prepare("SELECT * FROM users WHERE isBanned = '0' AND gameVersion $sign AND stars > 0 ORDER BY stars DESC LIMIT 100");
-		$query->execute();
-	}
-	if($type == "creators"){
-		$query = $db->prepare("SELECT * FROM users WHERE isCreatorBanned = '0' AND creatorPoints > 0 ORDER BY creatorPoints DESC LIMIT 100");
-		$query->execute();
-	}
-	if($type == "relative"){
-		$query = "SELECT * FROM users WHERE extID = :accountID";
-		$query = $db->prepare($query);
-		$query->execute([':accountID' => $accountID]);
-		$result = $query->fetchAll();
-		$user = $result[0];
-		$stars = $user["stars"];
-		if($_POST["count"]){
-			$count = ExploitPatch::remove($_POST["count"]);
-		}else{
-			$count = 50;
-		}
-		$count = floor($count / 2);
-		$query = $db->prepare("SELECT	A.* FROM	(
-			(
-				SELECT	*	FROM users
-				WHERE stars <= :stars
-				AND isBanned = 0
-				AND gameVersion $sign
-				ORDER BY stars DESC
-				LIMIT $count
-			)
-			UNION
-			(
-				SELECT * FROM users
-				WHERE stars >= :stars
-				AND isBanned = 0
-				AND gameVersion $sign
-				ORDER BY stars ASC
-				LIMIT $count
-			)
-		) as A
-		ORDER BY A.stars DESC");
-		$query->execute([':stars' => $stars]);
-	}
+
+if($type != "friends") {
+	switch($type) {
+		case "top":
+			$query = $db->prepare("SELECT * FROM users WHERE banned = '0' AND gameVersion $sign AND stars > 0 ORDER BY stars DESC LIMIT 100");
+			$query->execute();
+			break;
+		case "creators":
+			$query = $db->prepare("SELECT * FROM users WHERE creatorbanned = '0' AND creatorPoints > 0 ORDER BY creatorPoints DESC LIMIT 100");
+			$query->execute();
+			break;
+		case "relative":
+			$query = "SELECT * FROM users WHERE extID = :accountID";
+			$query = $db->prepare($query);
+			$query->execute([':accountID' => $accountID]);
+			$result = $query->fetchAll();
+			$user = $result[0];
+			$stars = $user["stars"];
+			if($_POST["count"]){
+				$count = ExploitPatch::remove($_POST["count"]);
+			}else{
+				$count = 50;
+			}
+			$count = floor($count / 2);
+			$query = $db->prepare("SELECT	A.* FROM	(
+				(
+					SELECT	*	FROM users
+					WHERE stars <= :stars
+					AND banned = 0
+					AND gameVersion $sign
+					ORDER BY stars DESC
+					LIMIT $count
+				)
+				UNION
+				(
+					SELECT * FROM users
+					WHERE stars >= :stars
+					AND banned = 0
+					AND gameVersion $sign
+					ORDER BY stars ASC
+					LIMIT $count
+				)
+			) as A
+			ORDER BY A.stars DESC");
+			$query->execute([':stars' => $stars]);
+			break;
+		
+	}	
 	$result = $query->fetchAll();
-	if($type == "relative"){
+	if($type == "relative") {
 		$user = $result[0];
 		$extid = $user["extID"];
 		$e = "SET @rownum := 0;";
 		$query = $db->prepare($e);
 		$query->execute();
 		$f = "SELECT rank, stars FROM (
-							SELECT @rownum := @rownum + 1 AS rank, stars, extID, isBanned
-							FROM users WHERE isBanned = '0' AND gameVersion $sign ORDER BY stars DESC
+							SELECT @rownum := @rownum + 1 AS rank, stars, extID, banned
+							FROM users WHERE banned = '0' AND gameVersion $sign ORDER BY stars DESC
 							) as result WHERE extID=:extid";
 		$query = $db->prepare($f);
 		$query->execute([':extid' => $extid]);
 		$leaderboard = $query->fetchAll();
 		//var_dump($leaderboard);
 		$leaderboard = $leaderboard[0];
-		$xi = $leaderboard["rank"] - 1;
+		$xi = $leaderboard["rank"];
 	}
 	foreach($result as &$user) {
 		$extid = 0;

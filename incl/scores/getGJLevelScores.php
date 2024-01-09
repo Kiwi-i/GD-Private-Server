@@ -39,7 +39,7 @@ if($query2->rowCount() == 0) {
 
 $query->execute([':accountID' => $accountID, ':levelID' => $levelID, ':percent' => $percent, ':uploadDate' => $uploadDate, ':coins' => $coins, ':attempts' => $attempts, ':clicks' => $clicks, ':time' => $time, ':progresses' => $progresses, ':dailyID' => $dailyID]);
 if($percent > 100){
-	$query = $db->prepare("UPDATE users SET isBanned=1 WHERE extID = :accountID");
+	$query = $db->prepare("UPDATE users SET banned=1 WHERE extID = :accountID");
 	$query->execute([':accountID' => $accountID]);
 }
 
@@ -78,12 +78,12 @@ $query2->execute($query2args);
 $result = $query2->fetchAll();
 foreach ($result as &$score) {
 	$extID = $score["accountID"];
-	$query2 = $db->prepare("SELECT userName, userID, icon, color1, color2, color3, iconType, special, extID, isBanned FROM users WHERE extID = :extID");
+	$query2 = $db->prepare("SELECT userName, userID, icon, color1, color2, color3, iconType, special, extID, banned FROM users WHERE extID = :extID");
 	$query2->execute([':extID' => $extID]);
 	$user = $query2->fetchAll();
 	$user = $user[0];
 	$time = date("d/m/Y G.i", $score["uploadDate"]);
-	if($user["isBanned"]==0){
+	if($user["banned"]==0){
 		if($score["percent"] == 100){
 			$place = 1;
 		}else if($score["percent"] > 75){

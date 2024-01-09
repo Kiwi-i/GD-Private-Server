@@ -1,5 +1,5 @@
 <?php
-error_reporting(0);
+//error_reporting(0);
 chdir(dirname(__FILE__));
 echo "Please wait...<br>";
 ob_flush();
@@ -25,20 +25,20 @@ include "../../incl/lib/connection.php";
 $query = $db->prepare("UPDATE users
 	LEFT JOIN
 	(
-	    SELECT usersTable.userID, (IFNULL(starredTable.starred, 0) + IFNULL(featuredTable.featured, 0) + (IFNULL(epicTable.epic,0)*2)) as CP FROM (
+	    SELECT usersTable.userID, (IFNULL(starredTable.starred, 0) + IFNULL(featuredTable.featured, 0) + IFNULL(epicTable.epic,0)) as CP FROM (
             SELECT userID FROM users
         ) AS usersTable
         LEFT JOIN
         (
-	        SELECT count(*) as starred, userID FROM levels WHERE starStars != 0 AND isCPShared = 0 GROUP BY(userID) 
+	        SELECT count(*) as starred, userID FROM levels WHERE starStars != 0 AND sharedCP = 0 GROUP BY(userID) 
 	    ) AS starredTable ON usersTable.userID = starredTable.userID
 	    LEFT JOIN
 	    (
-	        SELECT count(*) as featured, userID FROM levels WHERE starFeatured != 0 AND isCPShared = 0 GROUP BY(userID) 
+	        SELECT count(*) as featured, userID FROM levels WHERE (starFeatured != 0 AND sharedCP = 0 AND starStars != 0) GROUP BY(userID) 
 	    ) AS featuredTable ON usersTable.userID = featuredTable.userID
 	    LEFT JOIN
 	    (
-	        SELECT count(*)+(starEpic-1) as epic, userID FROM levels WHERE starEpic != 0 AND isCPShared = 0 GROUP BY(userID) 
+	        SELECT sum(starEpic) as epic, userID FROM levels WHERE (starEpic != 0 AND sharedCP = 0 AND starStars != 0) GROUP BY(userID) 
 	    ) AS epicTable ON usersTable.userID = epicTable.userID
 	) calculated
 	ON users.userID = calculated.userID
@@ -48,7 +48,7 @@ echo "Calculated base CP<br>";
 /*
 	CP SHARING
 */
-$query = $db->prepare("SELECT levelID, userID, starStars, starFeatured, starEpic FROM levels WHERE isCPShared = 1");
+$query = $db->prepare("SELECT levelID, userID, starStars, starFeatured, starEpic FROM levels WHERE sharedCP = 1");
 $query->execute();
 $result = $query->fetchAll();
 foreach($result as $level){

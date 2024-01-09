@@ -58,11 +58,11 @@ $result = $query2->fetchAll();
 $x = 0;
 foreach ($result as &$score) {
 	$extID = $score["accountID"];
-	$query2 = $db->prepare("SELECT userName, userID, icon, color1, color2, color3, iconType, special, extID, isBanned FROM users WHERE extID = :extID");
+	$query2 = $db->prepare("SELECT userName, userID, icon, color1, color2, color3, iconType, special, extID, banned FROM users WHERE extID = :extID");
 	$query2->execute([':extID' => $extID]);
 	$user = $query2->fetchAll();
 	$user = $user[0];
-	if($user["isBanned"] != 0) continue;
+	if($user["banned"] != 0) continue;
 	$x++;
 	$time = date("d/m/Y G.i", $score["timestamp"]);
 	$scoreType = $score[$mode];

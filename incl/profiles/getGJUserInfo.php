@@ -31,9 +31,9 @@ $query = $db->prepare($e);
 $query->execute();
 /*$f = "SELECT rank FROM (
                   SELECT @rownum := @rownum + 1 AS rank, extID
-                  FROM users WHERE isBanned = '0' AND gameVersion > 19 AND stars > 25 ORDER BY stars DESC
+                  FROM users WHERE banned = '0' AND gameVersion > 19 AND stars > 25 ORDER BY stars DESC
                   ) as result WHERE extID=:extid";*/
-$f = "SELECT count(*) FROM users WHERE stars > :stars AND isBanned = 0"; //I can do this, since I already know the stars amount beforehand
+$f = "SELECT count(*) FROM users WHERE stars > :stars AND banned = 0"; //I can do this, since I already know the stars amount beforehand
 $query = $db->prepare($f);
 $query->execute([':stars' => $user["stars"]]);
 if($query->rowCount() > 0){
@@ -41,7 +41,7 @@ if($query->rowCount() > 0){
 }else{
 	$rank = 0;
 }
-if ($user['isBanned'] != 0) $rank = 0;
+if ($user['banned'] != 0) $rank = 0;
 //var_dump($leaderboard);
 	//accinfo
 		$query = "SELECT youtubeurl,twitter,twitch, frS, mS, cS FROM accounts WHERE accountID = :extID";
@@ -60,12 +60,12 @@ if($me==$extid){
 			$query->execute([':me' => $me]);
 			$requests = $query->fetchColumn();
 		//messages
-			$query = "SELECT count(*) FROM messages WHERE toAccountID = :me AND isNew=0";
+			$query = "SELECT count(*) FROM messages WHERE toAccountID = :me AND new=0";
 			$query = $db->prepare($query);
 			$query->execute([':me' => $me]);
 			$pms = $query->fetchColumn();
 		//friends
-			$query = "SELECT count(*) FROM friendships WHERE (person1 = :me AND isNew2 = '1') OR  (person2 = :me AND isNew1 = '1')";
+			$query = "SELECT count(*) FROM friendships WHERE (person1 = :me AND new2 = '1') OR  (person2 = :me AND new1 = '1')";
 			$query = $db->prepare($query);
 			$query->execute([':me' => $me]);
 			$friends = $query->fetchColumn();

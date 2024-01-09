@@ -11,7 +11,7 @@ if(!empty($_POST["userName"]) && !empty($_POST["password"])){
 		exit("Invalid captcha response");
 	$pass = GeneratePass::isValidUsrname($userName, $password);
 	if ($pass == -2){
-		$query = $db->prepare("UPDATE accounts SET isActive = 1 WHERE userName LIKE :userName");
+		$query = $db->prepare("UPDATE accounts SET activated = 1 WHERE userName LIKE :userName");
 		$query->execute(['userName' => $userName]);
 		echo "Account has been succesfully activated.";
 	}

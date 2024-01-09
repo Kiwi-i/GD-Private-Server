@@ -11,6 +11,6 @@ if(empty($_POST["requestID"])){
 $accountID = GJPCheck::getAccountIDOrDie();
 $requestID = ExploitPatch::remove($_POST["requestID"]);
 
-$query=$db->prepare("UPDATE friendreqs SET isNew='0' WHERE ID = :requestID AND toAccountID = :targetAcc");
+$query=$db->prepare("UPDATE friendreqs SET new='0' WHERE ID = :requestID AND toAccountID = :targetAcc");
 $query->execute([':requestID' => $requestID, ':targetAcc' => $accountID]);
 echo "1";

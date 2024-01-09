@@ -7,7 +7,7 @@ if(empty($_POST["songID"])){
 	exit("-1");
 }
 $songid = ExploitPatch::remove($_POST["songID"]);
-$query3=$db->prepare("SELECT ID,name,authorID,authorName,size,isDisabled,download FROM songs WHERE ID = :songid LIMIT 1");
+$query3=$db->prepare("SELECT ID,name,authorID,authorName,size,disabled,download FROM songs WHERE ID = :songid LIMIT 1");
 $query3->execute([':songid' => $songid]);
 //todo: move this logic away from this file
 if($query3->rowCount() == 0) {
@@ -77,7 +77,7 @@ if($query3->rowCount() == 0) {
 	$reup = SongReup::reup($result);
 }else{
 	$result4 = $query3->fetch();
-	if($result4["isDisabled"] == 1){
+	if($result4["disabled"] == 1){
 		exit("-2");
 	}
 	$dl = $result4["download"];

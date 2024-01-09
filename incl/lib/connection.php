@@ -1,6 +1,7 @@
 <?php
 //error_reporting(0);
 include dirname(__FILE__)."/../../config/connection.php";
+error_reporting(E_ALL ^ E_WARNING && E_DEPRECATED);
 @header('Content-Type: text/html; charset=utf-8');
 if(!isset($port))
 	$port = 3306;
@@ -9,7 +10,7 @@ try {
     PDO::ATTR_PERSISTENT => true
 ));
     // set the PDO error mode to exception
-    $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+    $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_SILENT);
     }
 catch(PDOException $e)
     {

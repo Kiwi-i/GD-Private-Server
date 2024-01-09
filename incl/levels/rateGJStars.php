@@ -10,9 +10,12 @@ $gjp = ExploitPatch::remove($gjp2check);
 $stars = ExploitPatch::remove($_POST["stars"]);
 $levelID = ExploitPatch::remove($_POST["levelID"]);
 $accountID = GJPCheck::getAccountIDOrDie();
-$permState = $gs->checkPermission($accountID, "actionRateStars");
-if($permState){
-	$difficulty = $gs->getDiffFromStars($stars);
-	$gs->rateLevel($accountID, $levelID, 0, $difficulty["diff"], $difficulty["auto"], $difficulty["demon"]);
+
+$query = $db->prepare("UPDATE levels SET ratingVotes=ratingVotes+:stars, totalVotes=totalVotes+1 WHERE starStars='0' AND levelID=:levelID");	
+$query->execute([':stars' => $stars, ':levelID'=>$levelID]);
+
+if($query->rowCount() == 0) {
+	exit("-1");
 }
-echo 1;
+
+echo $levelID;

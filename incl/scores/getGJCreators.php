@@ -5,7 +5,7 @@ include "../lib/connection.php";
 require_once "../lib/exploitPatch.php";
 $accountID = ExploitPatch::remove($_POST["accountID"]);
 $type = ExploitPatch::remove($_POST["type"]);
-$query = "SELECT * FROM users WHERE isCreatorBanned = '0' ORDER BY creatorPoints DESC LIMIT 100";
+$query = "SELECT * FROM users WHERE creatorbanned = '0' ORDER BY creatorPoints DESC LIMIT 100";
 $query = $db->prepare($query);
 $query->execute();
 $result = $query->fetchAll();

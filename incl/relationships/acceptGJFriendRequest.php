@@ -18,7 +18,7 @@ $toAccountID = $request["toAccountID"];
 if($toAccountID != $accountID OR $reqAccountID == $accountID){
 	exit("-1");
 }
-$query = $db->prepare("INSERT INTO friendships (person1, person2, isNew1, isNew2)
+$query = $db->prepare("INSERT INTO friendships (person1, person2, new1, new2)
 VALUES (:accountID, :targetAccountID, 1, 1)");
 
 $query->execute([':accountID' => $reqAccountID, ':targetAccountID' => $toAccountID]);

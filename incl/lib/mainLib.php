@@ -298,7 +298,7 @@ class mainLib {
 		if ($query->rowCount() > 0) {
 			$userID = $query->fetchColumn();
 		} else {
-			$query = $db->prepare("INSERT INTO users (isRegistered, extID, userName, lastPlayed)
+			$query = $db->prepare("INSERT INTO users (registered, extID, userName, lastPlayed)
 			VALUES (:register, :id, :userName, :uploadDate)");
 
 			$query->execute([':id' => $extID, ':register' => $register, ':userName' => $userName, ':uploadDate' => time()]);
@@ -357,17 +357,17 @@ class mainLib {
 		$query->execute([':id' => $userID]);
 		$userdata = $query->fetch();*/
 		$extID = is_numeric($userdata['extID']) ? $userdata['extID'] : 0;
-		return "${userdata['userID']}:${userdata['userName']}:${extID}";
+		return "{$userdata['userID']}:{$userdata['userName']}:{$extID}";
 	}
 	public function getSongString($song){
 		include __DIR__ . "/connection.php";
-		/*$query3=$db->prepare("SELECT ID,name,authorID,authorName,size,isDisabled,download FROM songs WHERE ID = :songid LIMIT 1");
+		/*$query3=$db->prepare("SELECT ID,name,authorID,authorName,size,disabled,download FROM songs WHERE ID = :songid LIMIT 1");
 		$query3->execute([':songid' => $songID]);*/
 		if($song['ID'] == 0 || empty($song['ID'])){
 			return false;
 		}
 		//$song = $query3->fetch();
-		if($song["isDisabled"] == 1){
+		if($song["disabled"] == 1){
 			return false;
 		}
 		$dl = $song["download"];
@@ -472,7 +472,7 @@ class mainLib {
 
 		include __DIR__ . "/connection.php";
 		//isAdmin check
-		$query = $db->prepare("SELECT isAdmin FROM accounts WHERE accountID = :accountID");
+		$query = $db->prepare("SELECT admin FROM accounts WHERE accountID = :accountID");
 		$query->execute([':accountID' => $accountID]);
 		$isAdmin = $query->fetchColumn();
 		if($isAdmin == 1){
@@ -500,7 +500,7 @@ class mainLib {
 				}
 			}
 		}
-		$query = $db->prepare("SELECT $permission FROM roles WHERE isDefault = 1");
+		$query = $db->prepare("SELECT $permission FROM roles WHERE default = 1");
 		$query->execute();
 		$permState = $query->fetchColumn();
 		if($permState == 1){
@@ -641,7 +641,7 @@ class mainLib {
 				}
 			}
 		}
-		$query = $db->prepare("SELECT commentColor FROM roles WHERE isDefault = 1");
+		$query = $db->prepare("SELECT commentColor FROM roles WHERE default = 1");
 		$query->execute();
 		if($query->rowCount() > 0)
 			return $query->fetchColumn();
@@ -781,4 +781,12 @@ class mainLib {
 		$query->execute([':id' => $listID]);
 		return $query->fetchColumn();
 	}
+}
+
+function dumpPostQuery() {
+	$string = "";
+	foreach($_POST as $key => $value) {
+		$string .= $key.": ".$value."<br>";
+	}
+	file_put_contents("./debug.html", $string);
 }

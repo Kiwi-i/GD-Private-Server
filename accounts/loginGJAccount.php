@@ -3,6 +3,7 @@ include "../incl/lib/connection.php";
 require "../incl/lib/generatePass.php";
 require_once "../incl/lib/exploitPatch.php";
 require_once "../incl/lib/mainLib.php";
+
 $gs = new mainLib();
 //here im getting all the data
 $ip = $gs->getIP();
@@ -27,7 +28,7 @@ if ($pass == 1) { //success
 	if ($query2->rowCount() > 0) {
 		$userID = $query2->fetchColumn();
 	} else {
-		$query = $db->prepare("INSERT INTO users (isRegistered, extID, userName)
+		$query = $db->prepare("INSERT INTO users (registered, extID, userName)
 		VALUES (1, :id, :userName)");
 
 		$query->execute([':id' => $id, ':userName' => $userName]);

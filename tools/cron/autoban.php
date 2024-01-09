@@ -6,7 +6,7 @@ ob_flush();
 flush();
 //note: this needs a better algorithm
 $query = $db->prepare("
-SELECT 10+IFNULL(FLOOR(coins.coins*1.25)+(coins1.coins),0) as coins, 3+IFNULL(FLOOR(levels.demons*1.0625)+(demons.demons),0) as demons, 200+FLOOR((IFNULL(levels.stars,0)+IFNULL(gauntlets.stars,0)+IFNULL(mappacks.stars,0))+IFNULL(stars.stars,0)*1.25) as stars, 25+IFNULL(moons.moons,0) as moons FROM
+SELECT 3+IFNULL(FLOOR(coins.coins*1.25),0)+IFNULL(coins1.coins,0) as coins, 3+IFNULL(FLOOR(levels.demons*1.0625),0)+IFNULL(demons.demons,0) as demons, 200+FLOOR((IFNULL(levels.stars,0)+IFNULL(gauntlets.stars,0)+IFNULL(mappacks.stars,0))+IFNULL(stars.stars,0)*1.25) as stars, 25+IFNULL(moons.moons,0) as moons FROM
 		(SELECT SUM(coins) as coins FROM levels WHERE starCoins <> 0) coins
 	JOIN
 		(SELECT SUM(starDemon) as demons, SUM(starStars) as stars FROM levels) levels
@@ -45,7 +45,7 @@ SELECT 10+IFNULL(FLOOR(coins.coins*1.25)+(coins1.coins),0) as coins, 3+IFNULL(FL
 $query->execute();
 $levelstuff = $query->fetch();
 $stars = $levelstuff['stars']; $coins = $levelstuff['coins']; $demons = $levelstuff['demons']; $moons = $levelstuff['moons']; 
-$query = $db->prepare("UPDATE users SET isBanned = '1' WHERE stars > :stars OR demons > :demons OR userCoins > :coins OR moons > :moons OR stars < 0 OR demons < 0 OR coins < 0 OR userCoins < 0 OR diamonds < 0 OR moons < 0");
+$query = $db->prepare("UPDATE users SET banned = '1' WHERE stars > :stars OR demons > :demons OR userCoins > :coins OR moons > :moons OR stars < 0 OR demons < 0 OR coins < 0 OR userCoins < 0 OR diamonds < 0 OR moons < 0");
 $query->execute([':stars' => $stars, ':demons' => $demons, ':coins' => $coins, ':moons' => $moons]);
 $query = $db->prepare("SELECT userID, userName FROM users WHERE stars > :stars OR demons > :demons OR userCoins > :coins OR moons > :moons OR stars < 0 OR demons < 0 OR coins < 0 OR userCoins < 0 OR diamonds < 0 OR moons < 0");
 $query->execute([':stars' => $stars, ':demons' => $demons, ':coins' => $coins, ':moons' => $moons]);
@@ -58,13 +58,13 @@ $query = $db->prepare("SELECT IP FROM bannedips");
 $query->execute();
 $result = $query->fetchAll();
 foreach($result as &$ip){
-	$query = $db->prepare("UPDATE users SET isBanned = '1' WHERE IP LIKE CONCAT(:ip, '%')");
+	$query = $db->prepare("UPDATE users SET banned = '1' WHERE IP LIKE CONCAT(:ip, '%')");
 	$query->execute([':ip' => $ip["IP"]]);
 }
 echo "<hr>Autoban finished";
+//echo "<hr>Banned everyone with over $stars stars and over $coins user coins and over $demons demons and over $moons moons!<hr>done";
 ob_flush();
 flush();
 //done
-//echo "<hr>Banned everyone with over $stars stars and over $coins user coins and over $demons demons and over $moons moons!<hr>done";
 ?>
 <hr>

@@ -18,9 +18,9 @@ $query->execute([':type' => $type, ':itemID' => $itemID, ':ip' => $ip]);
 if($query->fetchColumn() > 2)
 	exit("-1");
 
-$query = $db->prepare("INSERT INTO actions_likes (itemID, type, isLike, ip) VALUES 
-											(:itemID, :type, :isLike, INET6_ATON(:ip))");
-$query->execute([':itemID' => $itemID, ':type' => $type, ':isLike' => $isLike, ':ip' => $ip]);
+$query = $db->prepare("INSERT INTO actions_likes (itemID, type, positive, ip) VALUES 
+											(:itemID, :type, :positive, INET6_ATON(:ip))");
+$query->execute([':itemID' => $itemID, ':type' => $type, ':positive' => $isLike, ':ip' => $ip]);
 
 switch($type){
 	case 1:

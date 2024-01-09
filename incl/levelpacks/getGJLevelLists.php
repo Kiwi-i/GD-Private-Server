@@ -91,12 +91,12 @@ switch($type){
 		$params[] = "lists.accountID = '$str'";
 		break;
 	case 6: // TOP LISTS
-		$params[] = "lists.starStars > 0";
+		$params[] = "lists.diamondReward > 0";
 		$params[] = "lists.starFeatured > 0";
 		$order = "downloads";
 		break;
 	case 11: // RATED
-		$params[] = "lists.starStars > 0";
+		$params[] = "lists.diamondReward > 0";
 		$order = "downloads";
 		break;
 	case 12: //FOLLOWED
@@ -141,8 +141,9 @@ $levelcount = $query->rowCount();
 foreach($result as &$list) {
 	if(!$list['uploadDateUnix']) $list['uploadDateUnix'] = 0;
 	if(!$list['updateDateUnix']) $list['updateDateUnix'] = 0;
-	$lvlstring .= "1:{$list['listID']}:2:{$list['listName']}:3:{$list['listDesc']}:5:{$list['listVersion']}:49:{$list['accountID']}:50:{$list['userName']}:10:{$list['downloads']}:7:{$list['starDifficulty']}:14:{$list['likes']}:19:{$list['starFeatured']}:51:{$list['listlevels']}:55:{$list['starStars']}:56:{$list['countForReward']}:28:{$list['uploadDateUnix']}:29:{$list['updateDateUnix']}"."|";
+	$lvlstring .= "1:{$list['listID']}:2:{$list['listName']}:3:{$list['listDesc']}:5:{$list['listVersion']}:49:{$list['accountID']}:50:{$list['userName']}:10:{$list['downloads']}:7:{$list['starDifficulty']}:14:{$list['likes']}:19:{$list['starFeatured']}:51:{$list['listlevels']}:55:{$list['diamondReward']}:56:{$list['levelsForReward']}:28:{$list['uploadDateUnix']}:29:{$list['updateDateUnix']}"."|";
 	$userstring .= $gs->getUserString($list)."|";
+	$lvlsmultistring[] = ["listID" => $list["listID"], "diamonds" => $list["diamondReward"], 'levelRequirement' => $list["levelsForReward"]];
 }
 if(empty($lvlstring)) exit("-1");
 if(!empty($str) AND is_numeric($str) AND $levelcount == 1) {
@@ -159,9 +160,10 @@ if(!empty($str) AND is_numeric($str) AND $levelcount == 1) {
 }
 $lvlstring = substr($lvlstring, 0, -1);
 $userstring = substr($userstring, 0, -1);
-echo $lvlstring."#".$userstring;
-echo "#".$totallvlcount.":".$offset.":10";
-echo "#";
-echo "Sa1ntSosetHuiHelloFromGreenCatsServerLOL";
+$finalstring = $lvlstring."#".$userstring;
+$finalstring .= "#".$totallvlcount.":".$offset.":10";
+$finalstring .=  "#";
+$finalstring .= GenerateHash::genMulti($lvlsmultistring);
+echo $finalstring;
 //echo GenerateHash::genMulti($lvlsmultistring);
 ?>

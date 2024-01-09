@@ -6,7 +6,7 @@ include "../../incl/lib/connection.php";
 $starsgain = array();
 $time = time() - 86400;
 $x = 0;
-$query = $db->prepare("SELECT users.userID, SUM(actions.value) AS stars, users.userName FROM actions INNER JOIN users ON actions.account = users.userID WHERE type = '9' AND timestamp > :time AND users.isBanned = 0 GROUP BY(users.userID)");
+$query = $db->prepare("SELECT users.userID, SUM(actions.value) AS stars, users.userName FROM actions INNER JOIN users ON actions.account = users.userID WHERE type = '9' AND timestamp > :time AND users.banned = 0 GROUP BY(users.userID)");
 $query->execute([':time' => $time]);
 $result = $query->fetchAll();
 foreach($result as &$gain){

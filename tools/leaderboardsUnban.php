@@ -17,7 +17,7 @@ if(!empty($_POST["userName"]) AND !empty($_POST["password"]) AND !empty($_POST["
 			if(!is_numeric($userID)){
 				exit("Invalid userID");
 			}
-			$query = $db->prepare("UPDATE users SET isBanned = 0 WHERE userID = :id");
+			$query = $db->prepare("UPDATE users SET banned = 0 WHERE userID = :id");
 			$query->execute([':id' => $userID]);
 			if($query->rowCount() != 0){
 				echo "Unbanned succesfully.";
